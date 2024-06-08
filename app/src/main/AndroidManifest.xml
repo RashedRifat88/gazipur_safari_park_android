@@ -41,6 +41,9 @@
         android:theme="@style/Theme.GSP"
         tools:targetApi="31">
         <activity
+            android:name=".ui.animal.SpecificAnimalListActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.species.SpeciesTypeActivity"
             android:exported="false" />
         <activity

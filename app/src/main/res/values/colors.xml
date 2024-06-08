@@ -323,6 +323,7 @@
     <color name="background">#DDE1DD</color>
     <color name="black1">#000000</color>
     <color name="colorgrey">#777474</color>
+    <color name="colorBlack">#000</color>
 
 
     <!--for random color generator -->

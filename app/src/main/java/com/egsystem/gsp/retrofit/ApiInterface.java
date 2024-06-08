@@ -2,12 +2,15 @@ package com.egsystem.gsp.retrofit;
 
 
 
+import com.egsystem.gsp.model.AnimalListModel;
 import com.egsystem.gsp.model.LoginModel;
+import com.egsystem.gsp.model.SpeciesListModel;
 
 import io.reactivex.Observable;
 import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
@@ -76,11 +79,19 @@ public interface ApiInterface {
 //    );
 //
 //
-//    @GET(Api.client_list)
-//    Observable<Response<ClientListModel>> client_list(@Header("authorization") String authorization,
-//                                                      @Header("Accept") String accept
-//
-//    );
+
+
+    @GET(Api.species)
+    Observable<Response<SpeciesListModel>> species_list(@Header("authorization") String authorization,
+                                                        @Header("Accept") String accept
+
+    );
+
+    @GET(Api.animals)
+    Observable<Response<AnimalListModel>> animal_list(@Header("authorization") String authorization,
+                                                      @Header("Accept") String accept
+
+    );
 
 
 }

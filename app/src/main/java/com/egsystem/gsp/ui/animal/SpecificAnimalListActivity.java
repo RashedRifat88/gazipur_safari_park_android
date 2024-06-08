@@ -24,9 +24,10 @@ import com.egsystem.gsp.R;
 import com.egsystem.gsp.credential.LoginActivity;
 import com.egsystem.gsp.data.SharedData;
 import com.egsystem.gsp.databinding.ActivityAnimalBinding;
-import com.egsystem.gsp.model.SpeciesListModel;
+import com.egsystem.gsp.databinding.ActivitySpecificAnimalListBinding;
+import com.egsystem.gsp.model.AnimalListModel;
 import com.egsystem.gsp.retrofit.RetrofitApiClient;
-import com.egsystem.gsp.ui.animal.adapter.AnimalListAdapter;
+import com.egsystem.gsp.ui.animal.adapter.SpecificAnimalListAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,17 +36,19 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class AnimalActivity extends AppCompatActivity {
-
-    private ActivityAnimalBinding binding;
-    private AnimalListAdapter adapter;
-    List<SpeciesListModel.Species> animalList;
+public class SpecificAnimalListActivity extends AppCompatActivity {
 
 
-    String area_id = "";
+    private ActivitySpecificAnimalListBinding binding;
+    private SpecificAnimalListAdapter adapter;
+    List<AnimalListModel.Animal> animalList;
+    List<AnimalListModel.Animal> specificAnimalList = new ArrayList<>();
+
+
+    String species_id;
     String area = "";
     ArrayAdapter<String> dataAdapter;
-    private List<SpeciesListModel.Species> areaList;
+    private List<AnimalListModel.Animal> areaList;
     private ArrayList<String> area_list;
     private HashMap<String, String> area_id_Map;
 
@@ -54,15 +57,19 @@ public class AnimalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityAnimalBinding.inflate(getLayoutInflater());
+        binding = ActivitySpecificAnimalListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
+        species_id = getIntent().getStringExtra("species_id");
+
 
         initStatusBar();
         initComponent();
 
         loadRecyclerView();
 
-        speciesApi();
+        houseRentApi();
 
 
 
@@ -114,7 +121,7 @@ public class AnimalActivity extends AppCompatActivity {
 
 
     private void loadRecyclerView() {
-        adapter = new AnimalListAdapter(this);
+        adapter = new SpecificAnimalListAdapter(this);
         binding.recyclerView.setAdapter(adapter);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         binding.recyclerView.setLayoutManager(mLayoutManager);
@@ -125,7 +132,7 @@ public class AnimalActivity extends AppCompatActivity {
 
 
     @SuppressLint("CheckResult")
-    public void speciesApi() {
+    public void houseRentApi() {
 
         showProgressDialog();
 
@@ -135,7 +142,7 @@ public class AnimalActivity extends AppCompatActivity {
         String accept = "application/json";
 
 
-        RetrofitApiClient.getApiInterface().species_list(authorization, accept)
+        RetrofitApiClient.getApiInterface().animal_list(authorization, accept)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
@@ -143,7 +150,7 @@ public class AnimalActivity extends AppCompatActivity {
 
 
                             if (response.code() == 401) {
-                                Intent intent = new Intent(AnimalActivity.this, LoginActivity.class);
+                                Intent intent = new Intent(SpecificAnimalListActivity.this, LoginActivity.class);
                                 intent.putExtra("SENDER_ACTIVITY_NAME", "");
                                 startActivity(intent);
                             }
@@ -154,37 +161,37 @@ public class AnimalActivity extends AppCompatActivity {
 
                                 Log.d("tag1111177", " response.body(): " + response.body());
 
-                                SpeciesListModel specialistDoctor = response.body();
 
                                 if (response.code() == 200) {
 
-                                    SpeciesListModel model = response.body();
+                                    AnimalListModel model = response.body();
 
-                                    animalList = model.getResult().getSpecies();
+                                    animalList = model.getResult().getAnimals();
 
                                     Log.d("tag1111177", " animalList: " + animalList);
 
-                                    adapter.setData(animalList);
+
+                                    for (int i = 0; i<animalList.size(); i++){
+                                        String speciesId = String.valueOf(animalList.get(i).getSpeciesId().getId());
+                                        Log.d("tag1111177", " speciesId: " + speciesId);
+                                        Log.d("tag1111177", " species_id: " + species_id);
+
+                                        if (speciesId.equalsIgnoreCase(species_id)){
+                                            specificAnimalList.add(animalList.get(i));
+                                        }
+
+                                    }
+
+
+                                    Log.d("tag1111177", " specificAnimalList: " + specificAnimalList);
+
+                                    adapter.setData(specificAnimalList);
                                     adapter.notifyDataSetChanged();
 
 
-//                                    for (int i = 0; i<model.getResult().getHouseRentPosts().size(); i++){
-//                                        String area1 = model.getResult().getHouseRentPosts().get(i).getArea().getName();
-//                                        Log.d("tag1111177", " areaList: " + areaList);
-//                                        area_list.add("Select Area");
-//                                        HouseRentCreateModel.Area area;
-//                                        area_list.add(area1);
-////                                        area_id_Map.put(area.getName(), area.getId().toString());
-////                                        Log.d("tag11111", "area.getId(): " + area.getId());
-//                                    }
-//
-//                                    dataAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item, area_list);
-//                                    dataAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-//                                    binding.spinnerArea.setAdapter(dataAdapter);
-
 
                                 } else {
-                                    new MaterialDialog.Builder(AnimalActivity.this)
+                                    new MaterialDialog.Builder(SpecificAnimalListActivity.this)
                                             .title("Doctor Status")
                                             .content("Nursing package list is empty....")
                                             .positiveText("")
@@ -216,7 +223,6 @@ public class AnimalActivity extends AppCompatActivity {
 
 
     }
-
 
 
 

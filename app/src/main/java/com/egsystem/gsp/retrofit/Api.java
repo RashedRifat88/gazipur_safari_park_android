@@ -16,6 +16,10 @@ public class Api {
     public static final String client_sell_posts = "client/sell-posts";
 
 
+    public static final String species = "api/user/animals/create";
+    public static final String animals = "api/user/animals";
+
+
 
 
 }
